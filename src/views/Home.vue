@@ -1,12 +1,10 @@
 <template>
-	<div class="row">
+	<div class="container">
 		<HomeList />
 	</div>
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from "@/components/HelloWorld.vue";
 import HomeList from "@/components/HomeList.vue";
 
 export default {

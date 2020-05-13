@@ -10,15 +10,22 @@
 					<li><router-link to="/export">Export</router-link></li>
 				</ul>
 			</div>
-			<router-view />
 		</div>
+		<router-view />
 	</div>
 </template>
 
 <script>
-	export default {
 
-	}
+//	import DataMap from '@/app/DataMap.json'
+
+	export default {
+		data () {
+			return {
+//				DataMap: Datamap
+			}
+		}
+	};
 </script>
 
 <style>
