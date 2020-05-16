@@ -45,10 +45,11 @@
 	ul.vertical li { padding: 15px 0 0; margin: 15px 0 0; }
 	ul.vertical.lines li { border-top: 1px solid #999; }
 	li span { display: inline-block; }
-	span.wide { width: 300px; }
+	span.wide { width: 400px; }
 	span.medium { width: 120px; }
 	span.medium-wide { width: 220px; }
-	span.thin { width: 80px; }
+	span.thin { width: 120px; }
+	span.thin.ready {color: blue; }
 	.form_element_padding { display: inline-block; padding: 15px; }
 	label { padding: 15px 15px 15px 0; box-sizing: border-box; display: inline-block; width: 200px; vertical-align: top; }
 	input[type="text"], input[type="password"] { font-family: 'trebuchet ms'; padding: 15px; border: none; background-color: #333; color: #fff; width: 300px; }
