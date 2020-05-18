@@ -2,15 +2,13 @@
 
 ## About
 ```
-This tool is to replace a significant amount of work in the production of the yearly Brooklyn Film Festival. Before this tool, the production process consisted of gathering data from about 5 different platforms and having to sift through hundreds of emails. The process took over 2 weeks. This tool has cut that down to about 3 days and further changes will probably make it a 1 day job.
+This tool is being built to reduce a significant amount of work in the production of the yearly Brooklyn Film Festival. Before this tool, the production process consisted of gathering data from about 5 different platforms and having to sift through hundreds of emails. The process took over 2 weeks. This tool has cut that down to about 3 days and further changes will probably make it a 1 day job.
 
 The goal is to eventually link this to the bff.org's Wordpress DB, via Rest API.
 
-LAMP CMS, with the UI being refactored in React.
+LAMP Stack, with the UI being refactored in React. Initially considered Vue as the UI, but have since switched to React, as I am able to incrementally apply it, instead of having to rebuild the entire application, from the ground up.
 
-Initially considered Vue as the UI, but have since switched to React, as I am able to incrementally apply it, instead of having to rebuild, the entire application, from the ground up.
-
-The UI was originally built in JS, HTML, CSS & jQuery, as a prototype for a more robust implementation.
+The UI was originally built in JS, HTML, CSS & jQuery.
 
 The MySQL DB takes advantage of the newish JSON data type, storing the exportable data in a JSON formatted cell, again, as the intent of this CMS is to eventually link directly to the Wordpress import. This is the groundwork for the Rest API to do that.
 ```
