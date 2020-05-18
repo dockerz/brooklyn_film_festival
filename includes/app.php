@@ -1,6 +1,12 @@
 <?php
 
-	if ($_SERVER['REMOTE_ADDR'] !== '184.152.37.149') :exit; endif;
+	session_start();
+
+	if ($_SERVER['REMOTE_ADDR'] !== '184.152.37.149') {
+		define ('STATUS', 'GUEST');
+	} else {
+		define ('STATUS', 'MEMBER');
+	};
 
 	define ('CLIENT_PATH', '/client/bff/');
 	define ('ROOT_DIRECTORY', $_SERVER['DOCUMENT_ROOT'] . CLIENT_PATH);
@@ -11,67 +17,110 @@
 	ini_set('display_errors', 1);
 	require 'secrets.php';
 
+	/*
+
+		$film_freeway_index_map is how the data coming from the Film Freeway .xls file is mapped.
+		When used, this is exploded with a `
+
+		*/
+
 	$film_freeway_index_map = "First Name`Last Name`Birthdate`Gender`Email`Phone`Address`Address 2`City`State`Postal Code`Country`Tracking Number1`Project Title`Project Title (Original Language)`Synopsis`Synopsis (Original Language)`Lyrics`Duration`Country of Origin`Language`Trailer URL`Country of Filming`Project Website`Twitter`Facebook`Project Type`Genres`Student Project`Completion Date`Production Budget`Shooting Format`Aspect Ratio`Film Color`Camera`Lens`Focal Length`Shutter Speed`Aperture`ISO Film`First-time Filmmaker`Directors`Writers`Producers`Key Cast`Other Credits`Submitter Statement`Submitter Biography`Rating`Flag`Submission Date`Submission Status`Judging Status`Submission Deadlines`Submission Categories`Discount Code`Submission Link`Submission Password`Assigned Judges`Screenings Awards`Distributor Information`Submission ID`Submission Notes";
 
+	/*
+
+		$film_data_map maps the input from the Film Freeway(.xls) import to the required output format of the G Doc(.tsv). The import has fewer fields than what is required, and in a different order.
+		All of the keys in $film_data_map exist in the G Doc, in the same order.
+		This array is used to map the MySQL data in the "data" row, which is formatted for JSON.
+		$film_data_map is also used to render data on the view and edit pages. The map is retrieved and iterated through, with its associated data.
+
+		The structure of the map is as follows:
+
+			example:	"submit_id" => [[12], false, false, "inp"],
+			map:			"1" => [[2], 3, 4, 5],
+
+			1.
+				The key of the output. This key corresponds to the key in the DB and the key in the destination file.
+
+			2.
+				This is either an array or Boolen(FALSE). If truthy, the array looks for numbered indexes from the .xls import and maps them to the correct key. When importing, the return value is an array.
+
+				If FALSE, this key is ignored and no other action is taken. Also, if FALSE, does not render on the view and edit pages.
+
+			3.
+				If the return array from 2 has more than 1 key, this is probably a multiline value. An example of a multi-line value is "genre", which has 5 different keys, in this array - genre_1, genre_2, genre_3, genre_4, genre_5 - so the return array would look like: ["Drama", "Comedy", "Action", "Horror", "Thriller"].
+
+				TRUE means it is multiline. When importing, add the value, then remove from the array, continue to the next key, repeat until there are no more values, or the next multiline is FALSE.
+
+			4.
+				When not FALSE, calls the function name, listed, here for specific manipulation of data.
+
+			5.
+				Affects the edit page. Is the form element a <textarea>(txt) or <input>(inp)?
+
+			6.
+				This is a map for the custom import page, for use with .tsv formatted data from the lineup G Doc.
+
+		*/
+
 	$film_data_map = [
-		"submit_id" => [[12],false,false],
-		"title_article" => [[13],false,"title"],
-		"title" => [[13],false,false],
-		"title_original" => [[14],false,false],
-		"category" => [[54],false,false],
-		"genre_1" => [[27],true,"split"],
-		"genre_2" => [[27],true,false],
-		"genre_3" => [[27],true,false],
-		"genre_4" => [[27],true,false],
-		"genre_5" => [[27],true,false],
-		"year" => [[29],false,"make_date"],
-		"length" => [[18],false,"make_duration"],
-		"format" => [[31],true,false],
+		"submit_id" => [[12], false, false, "inp"],
+		"title_article" => [[13], false, "title", "inp"],
+		"title" => [[13], false, false, "inp"],
+		"title_original" => [[14], false, false, "inp"],
+		"category" => [[54], false, false, "inp"],
+		"genre_1" => [[27], true, "split", "inp"],
+		"genre_2" => [[27], true, false, "inp"],
+		"genre_3" => [[27], true, false, "inp"],
+		"genre_4" => [[27], true, false, "inp"],
+		"genre_5" => [[27], true, false, "inp"],
+		"year" => [[29], false, "make_date", "inp"],
+		"length" => [[18], false, "make_duration", "inp"],
+		"format" => [[31], true, false, "inp"],
 		"premiere" => [false],
-		"email" => [[4],false,false],
-		"web" => [[23],true,false],
-		"cast" => [[44],false,false],
-		"crew" => [[42, 43, 45], false, "assemble_crew"],
+		"email" => [[4], false, false, "inp"],
+		"web" => [[23], true, false, "inp"],
+		"cast" => [[44], false, false, "inp"],
+		"crew" => [[42, 43, 45], false, "assemble_crew", "inp"],
 		"sales" => [false],
-		"contact_info" => [[0,1], false, "assemble_submitter"],
+		"contact_info" => [[0, 1], false, "assemble_submitter", "inp"],
 		"notes" => [false],
-		"imdb_url" => ["manual"],
-		"facebook_url" => ["manual"],
-		"twitter_url" => ["manual"],
-		"instagram_url" => ["manual"],
+		"imdb_url" => ["manual", false, false, "inp"],
+		"facebook_url" => ["manual", false, false, "inp"],
+		"twitter_url" => ["manual", false, false, "inp"],
+		"instagram_url" => ["manual", false, false, "inp"],
 		"related_url_1" => [false],
 		"related_url_2" => [false],
 		"related_url_3" => [false],
 		"related_url_4" => [false],
 		"related_url_5" => [false],
-		"synopsis" => [[15], false, false],
-		"festivals" => [[59], false, false],
+		"synopsis" => [[15], false, false, "txt"],
+		"festivals" => [[59], false, false, "txt"],
 		"awards_ext" => [false],
-		"youtube_url" => ["manual"],
-		"vimeo_url" => ["manual"],
+		"youtube_url" => ["manual", false, false, "inp"],
+		"vimeo_url" => ["manual", false, false, "inp"],
 		"preview_type" => [false],
-		"shooting_format_1" => [[31],true,"split"],
-		"shooting_format_2" => [[31],true,false],
-		"shooting_format_3" => [[31],true,false],
-		"shooting_format_4" => [[31],true,false],
-		"shooting_format_5" => [[31],true,false],
-		"country_1" => [[19, 22], true, "assemble_countries"],
-		"country_2" => [[19, 22], true, false],
-		"country_3" => [[19, 22], true, false],
-		"country_4" => [[19, 22], true, false],
-		"country_5" => [[19, 22], true, false],
-		"country_ext" => [[19, 22], true, false],
-		"director_1_first_name" => [[41], true, "director_name"],
-		"director_1_last_name" => [[41], true, false],
-		"director_1_biography" => [[47], true, false],
-		"director_1_imdb_url" => ["manual"],
-		"director_1_web" => ["manual"],
+		"shooting_format_1" => [[31], true, "split", "inp"],
+		"shooting_format_2" => [[31], true, false, "inp"],
+		"shooting_format_3" => [[31], true, false, "inp"],
+		"shooting_format_4" => [[31], true, false, "inp"],
+		"shooting_format_5" => [[31], true, false, "inp"],
+		"country_1" => [[19, 22], true, "assemble_countries", "inp"],
+		"country_2" => [[19, 22], true, false, "inp"],
+		"country_3" => [[19, 22], true, false, "inp"],
+		"country_4" => [[19, 22], true, false, "inp"],
+		"country_5" => [[19, 22], true, false, "inp"],
+		"country_ext" => [[19, 22], true, false, "inp"],
+		"director_1_first_name" => [[41], true, "director_name", "inp"],
+		"director_1_last_name" => [[41], true, false, "inp"],
+		"director_1_biography" => [[47], true, false, "inp"],
+		"director_1_imdb_url" => ["manual", false, false, "inp"],
+		"director_1_web" => ["manual", false, false, "inp"],
 		"director_1_email" => [false],
-		"director_2_first_name" => ["manual"],
-		"director_2_last_name" => ["manual"],
-		"director_2_biography" => ["manual"],
-		"director_2_imdb_url" => ["manual"],
-		"director_2_web" => ["manual"],
+		"director_2_first_name" => ["manual", false, false, "inp"],
+		"director_2_last_name" => ["manual", false, false, "inp"],
+		"director_2_biography" => ["manual", false, false, "inp"],
+		"director_2_imdb_url" => ["manual", false, false, "inp"],
+		"director_2_web" => ["manual", false, false, "inp"],
 		"director_2_email" => [false],
 		"director_3_first_name" => [false],
 		"director_3_last_name" => [false],
@@ -91,16 +140,16 @@
 		"director_5_imdb_url" => [false],
 		"director_5_web" => [false],
 		"director_5_email" => [false],
-		"director_statement" => [[46], false, false],
-		"image_1" => ["manual"],
-		"image_2" => ["manual"],
-		"image_3" => ["manual"],
-		"image_4" => ["manual"],
-		"image_5" => ["manual"],
+		"director_statement" => [[46], false, false, "txt"],
+		"image_1" => ["manual", false, false, "inp"],
+		"image_2" => ["manual", false, false, "inp"],
+		"image_3" => ["manual", false, false, "inp"],
+		"image_4" => ["manual", false, false, "inp"],
+		"image_5" => ["manual", false, false, "inp"],
 		"will_attend" => [false],
 		"who_will_attend" => [false],
 		"display_order" => [false],
-		"language" => [[20], false, false]
+		"language" => [[20], false, false, "inp"]
 	];
 
 	function authorized () {
