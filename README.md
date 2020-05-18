@@ -33,4 +33,8 @@ As it turns out this was wrong. There were films, not in Film Freeway, that only
 
 5. Change all references of submission_id to submit_id, including in the DB.
 
+6. Add ability to add a note from edit.php
+
+7. Update the import script to do everything on the list of import.php
+
 ```
