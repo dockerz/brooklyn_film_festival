@@ -160,27 +160,6 @@
 		"language" => [[20], FALSE, FALSE, "inp", FALSE]
 	];
 
-	function format_as_JSON ($input) {
-
-		/*
-
-			This utility function formats JSON, that has come from the JSON formatted cell, in the MySQL DB into Javascript ready JSON.
-			The reason is, the data coming from the DB
-
-		*/
-
-		$films_array = [];
-		foreach ($input as $k1 => $v1) {
-			$film_array = [];
-			foreach ($v1 as $k2 => $v2) {
-				$v2 = trim($v2);
-				$film_array[] = "\"" . $k2 . "\":" . ((strpos ($v2, "\"") !== 0) ? "\"" . $v2 . "\"" : $v2);
-			}
-			$films_array[] = "{" . implode (",", $film_array) . "}";
-		}
-		return implode (",\n", $films_array);
-	}
-
 	function authorized () {
 		return ($_SERVER['REMOTE_ADDR'] === '184.152.37.149') ? TRUE : FALSE;
 	}
@@ -210,13 +189,6 @@
 		$stmt = $mysqli->prepare("SELECT * FROM `film` WHERE `submission_id`=? ORDER BY `id` DESC LIMIT 1");
 		$stmt->execute([$submission_id]);
 		return $stmt->fetch(PDO::FETCH_ASSOC);
-	}
-
-	function get_note ($submission_id) {
-		global $mysqli;
-		$stmt = $mysqli->prepare("SELECT `id` FROM `film_email` WHERE `submission_id`=? LIMIT 1");
-		$stmt->execute([$submission_id]);
-		return $stmt->fetch();
 	}
 
 	function get_custom_submit_id () {
