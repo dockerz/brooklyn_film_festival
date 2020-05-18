@@ -14,8 +14,10 @@ This id was to be unique and all edits and whatnot where supposed to add a new r
 
 As it turns out this was wrong. There were films, not in Film Freeway, that only existed in the lineup G Doc and had to be imported manually. Many of these had almost no data, at all.
 
-The system must be refactored to be based upon the original title, including definite article, and year, as 2 films could have the same name, from different years.
+The system must be refactored to for unique identifiers be based upon the original title(including definite article - "The Greatest Film") and year, as 2 films could have the same name, from different years.
 
 Also, years must be implemented, starting with 2020. Assign all 2020 films this.
+
+Next, a login for admins and guest access must be allowed for folks viewing portfolio.
 
 ```

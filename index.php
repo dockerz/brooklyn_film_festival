@@ -3,7 +3,7 @@
 	require "includes/app.php";
 	require "includes/head.php";
 
-	$films = get_films_from_database();
+	$films = get_films_from_database(); // films output is in JSON format
 	$films_output = '';
 	$ready_for_export_count = $with_images_count = 0;
 
@@ -38,16 +38,5 @@
 	</div>
 
 <?php
-
-	$films_array = [];
-	foreach ($films as $k1 => $v1) {
-		$film_array = [];
-		foreach ($v1 as $k2 => $v2) {
-			$v2 = trim($v2);
-			$film_array[] = "\"" . $k2 . "\":" . ((strpos ($v2, "\"") !== 0) ? "\"" . $v2 . "\"" : $v2);
-		}
-		$films_array[] = "{" . implode (",", $film_array) . "}";
-	}
-	$final_array = implode (",\n", $films_array);
 
 	require "includes/foot.php";

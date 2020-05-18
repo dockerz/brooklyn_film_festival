@@ -20,7 +20,7 @@
 				}
 			}
 
-			$message = add_films_to_database ($films_for_output);
+			$message = add_films_to_database_from_FF ($films_for_output);
 
 			echo $message;
 

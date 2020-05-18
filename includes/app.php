@@ -39,88 +39,94 @@
 			map:			"1" => [[2], 3, 4, 5],
 
 			1.
-				The key of the output. This key corresponds to the key in the DB and the key in the destination file.
+
+				The key of the output. This key corresponds to the key in the DB and the key in the export file. These keys are required, in this order, for proper assembly by Wordpress import.
 
 			2.
-				This is either an array or Boolen(FALSE). If truthy, the array looks for numbered indexes from the .xls import and maps them to the correct key. When importing, the return value is an array.
 
-				If FALSE, this key is ignored and no other action is taken. Also, if FALSE, does not render on the view and edit pages.
+				This is either an array or Boolen(FALSE). If truthy, the array looks for numbered indexes from the .xls import and maps them to the this key, or these keys. When importing, the return value is an array.
+
+				If FALSE, this key is ignored and the input element does not appear on edit.php, or display on view.php. IMPORTANT: even if the key is ignored, in the UI, it must be included in the export - it must be in the export schema - it simply holds an empty value, such as "will_attend => ''".
 
 			3.
+
 				If the return array from 2 has more than 1 key, this is probably a multiline value. An example of a multi-line value is "genre", which has 5 different keys, in this array - genre_1, genre_2, genre_3, genre_4, genre_5 - so the return array would look like: ["Drama", "Comedy", "Action", "Horror", "Thriller"].
 
 				TRUE means it is multiline. When importing, add the value, then remove from the array, continue to the next key, repeat until there are no more values, or the next multiline is FALSE.
 
 			4.
+
 				When not FALSE, calls the function name, listed, here for specific manipulation of data.
 
 			5.
+
 				Affects the edit page. Is the form element a <textarea>(txt) or <input>(inp)?
 
 			6.
+
 				This is a map for the custom import page, for use with .tsv formatted data from the lineup G Doc.
 
 		*/
 
 	$film_data_map = [
-		"submit_id" => [[12], FALSE, FALSE, "inp"],
-		"title_article" => [[13], FALSE, "title", "inp"],
-		"title" => [[13], FALSE, FALSE, "inp"],
-		"title_original" => [[14], FALSE, FALSE, "inp"],
-		"category" => [[54], FALSE, FALSE, "inp"],
-		"genre_1" => [[27], TRUE, "split", "inp"],
-		"genre_2" => [[27], TRUE, FALSE, "inp"],
-		"genre_3" => [[27], TRUE, FALSE, "inp"],
-		"genre_4" => [[27], TRUE, FALSE, "inp"],
-		"genre_5" => [[27], TRUE, FALSE, "inp"],
-		"year" => [[29], FALSE, "make_date", "inp"],
-		"length" => [[18], FALSE, "make_duration", "inp"],
-		"format" => [[31], TRUE, FALSE, "inp"],
+		"submit_id" => [[12], FALSE, FALSE, "inp", FALSE],
+		"title_article" => [[13], FALSE, "title", "inp", FALSE],
+		"title" => [[13], FALSE, FALSE, "inp", FALSE],
+		"title_original" => [[14], FALSE, FALSE, "inp", FALSE],
+		"category" => [[54], FALSE, FALSE, "inp", 1],
+		"genre_1" => [[27], TRUE, "split", "inp", FALSE],
+		"genre_2" => [[27], TRUE, FALSE, "inp", FALSE],
+		"genre_3" => [[27], TRUE, FALSE, "inp", FALSE],
+		"genre_4" => [[27], TRUE, FALSE, "inp", FALSE],
+		"genre_5" => [[27], TRUE, FALSE, "inp", FALSE],
+		"year" => [[29], FALSE, "make_date", "inp", FALSE],
+		"length" => [[18], FALSE, "make_duration", "inp", 8],
+		"format" => [[31], TRUE, FALSE, "inp", FALSE],
 		"premiere" => [FALSE],
-		"email" => [[4], FALSE, FALSE, "inp"],
-		"web" => [[23], TRUE, FALSE, "inp"],
-		"cast" => [[44], FALSE, FALSE, "inp"],
-		"crew" => [[42, 43, 45], FALSE, "assemble_crew", "inp"],
+		"email" => [[4], FALSE, FALSE, "inp", 12],
+		"web" => [[23], TRUE, FALSE, "inp", FALSE],
+		"cast" => [[44], FALSE, FALSE, "inp", FALSE],
+		"crew" => [[42, 43, 45], FALSE, "assemble_crew", "inp", FALSE],
 		"sales" => [FALSE],
-		"contact_info" => [[0, 1], FALSE, "assemble_submitter", "inp"],
+		"contact_info" => [[0, 1], FALSE, "assemble_submitter", "inp", 10],
 		"notes" => [FALSE],
-		"imdb_url" => ["manual", FALSE, FALSE, "inp"],
-		"facebook_url" => ["manual", FALSE, FALSE, "inp"],
-		"twitter_url" => ["manual", FALSE, FALSE, "inp"],
-		"instagram_url" => ["manual", FALSE, FALSE, "inp"],
+		"imdb_url" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"facebook_url" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"twitter_url" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"instagram_url" => ["manual", FALSE, FALSE, "inp", FALSE],
 		"related_url_1" => [FALSE],
 		"related_url_2" => [FALSE],
 		"related_url_3" => [FALSE],
 		"related_url_4" => [FALSE],
 		"related_url_5" => [FALSE],
-		"synopsis" => [[15], FALSE, FALSE, "txt"],
-		"festivals" => [[59], FALSE, FALSE, "txt"],
+		"synopsis" => [[15], FALSE, FALSE, "txt", FALSE],
+		"festivals" => [[59], FALSE, FALSE, "txt", FALSE],
 		"awards_ext" => [FALSE],
-		"youtube_url" => ["manual", FALSE, FALSE, "inp"],
-		"vimeo_url" => ["manual", FALSE, FALSE, "inp"],
+		"youtube_url" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"vimeo_url" => ["manual", FALSE, FALSE, "inp", FALSE],
 		"preview_type" => [FALSE],
-		"shooting_format_1" => [[31], TRUE, "split", "inp"],
-		"shooting_format_2" => [[31], TRUE, FALSE, "inp"],
-		"shooting_format_3" => [[31], TRUE, FALSE, "inp"],
-		"shooting_format_4" => [[31], TRUE, FALSE, "inp"],
-		"shooting_format_5" => [[31], TRUE, FALSE, "inp"],
-		"country_1" => [[19, 22], TRUE, "assemble_countries", "inp"],
-		"country_2" => [[19, 22], TRUE, FALSE, "inp"],
-		"country_3" => [[19, 22], TRUE, FALSE, "inp"],
-		"country_4" => [[19, 22], TRUE, FALSE, "inp"],
-		"country_5" => [[19, 22], TRUE, FALSE, "inp"],
-		"country_ext" => [[19, 22], TRUE, FALSE, "inp"],
-		"director_1_first_name" => [[41], TRUE, "director_name", "inp"],
-		"director_1_last_name" => [[41], TRUE, FALSE, "inp"],
-		"director_1_biography" => [[47], TRUE, FALSE, "inp"],
-		"director_1_imdb_url" => ["manual", FALSE, FALSE, "inp"],
-		"director_1_web" => ["manual", FALSE, FALSE, "inp"],
+		"shooting_format_1" => [[31], TRUE, "split", "inp", FALSE],
+		"shooting_format_2" => [[31], TRUE, FALSE, "inp", FALSE],
+		"shooting_format_3" => [[31], TRUE, FALSE, "inp", FALSE],
+		"shooting_format_4" => [[31], TRUE, FALSE, "inp", FALSE],
+		"shooting_format_5" => [[31], TRUE, FALSE, "inp", FALSE],
+		"country_1" => [[19, 22], TRUE, "assemble_countries", "inp", 9],
+		"country_2" => [[19, 22], TRUE, FALSE, "inp", FALSE],
+		"country_3" => [[19, 22], TRUE, FALSE, "inp", FALSE],
+		"country_4" => [[19, 22], TRUE, FALSE, "inp", FALSE],
+		"country_5" => [[19, 22], TRUE, FALSE, "inp", FALSE],
+		"country_ext" => [[19, 22], TRUE, FALSE, "inp", FALSE],
+		"director_1_first_name" => [[41], TRUE, "director_name", "inp", 11],
+		"director_1_last_name" => [[41], TRUE, FALSE, "inp", 11],
+		"director_1_biography" => [[47], TRUE, FALSE, "inp", FALSE],
+		"director_1_imdb_url" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"director_1_web" => ["manual", FALSE, FALSE, "inp", FALSE],
 		"director_1_email" => [FALSE],
-		"director_2_first_name" => ["manual", FALSE, FALSE, "inp"],
-		"director_2_last_name" => ["manual", FALSE, FALSE, "inp"],
-		"director_2_biography" => ["manual", FALSE, FALSE, "inp"],
-		"director_2_imdb_url" => ["manual", FALSE, FALSE, "inp"],
-		"director_2_web" => ["manual", FALSE, FALSE, "inp"],
+		"director_2_first_name" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"director_2_last_name" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"director_2_biography" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"director_2_imdb_url" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"director_2_web" => ["manual", FALSE, FALSE, "inp", FALSE],
 		"director_2_email" => [FALSE],
 		"director_3_first_name" => [FALSE],
 		"director_3_last_name" => [FALSE],
@@ -140,23 +146,44 @@
 		"director_5_imdb_url" => [FALSE],
 		"director_5_web" => [FALSE],
 		"director_5_email" => [FALSE],
-		"director_statement" => [[46], FALSE, FALSE, "txt"],
-		"image_1" => ["manual", FALSE, FALSE, "inp"],
-		"image_2" => ["manual", FALSE, FALSE, "inp"],
-		"image_3" => ["manual", FALSE, FALSE, "inp"],
-		"image_4" => ["manual", FALSE, FALSE, "inp"],
-		"image_5" => ["manual", FALSE, FALSE, "inp"],
+		"director_statement" => [[46], FALSE, FALSE, "txt", FALSE],
+		"image_1" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"image_2" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"image_3" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"image_4" => ["manual", FALSE, FALSE, "inp", FALSE],
+		"image_5" => ["manual", FALSE, FALSE, "inp", FALSE],
 		"will_attend" => [FALSE],
 		"who_will_attend" => [FALSE],
 		"display_order" => [FALSE],
-		"language" => [[20], FALSE, FALSE, "inp"]
+		"language" => [[20], FALSE, FALSE, "inp", FALSE]
 	];
+
+	function format_as_JSON ($input) {
+
+		/*
+
+			This utility function formats JSON, that has come from the JSON formatted cell, in the MySQL DB into Javascript ready JSON.
+			The reason is, the data coming from the DB
+
+		*/
+
+		$films_array = [];
+		foreach ($input as $k1 => $v1) {
+			$film_array = [];
+			foreach ($v1 as $k2 => $v2) {
+				$v2 = trim($v2);
+				$film_array[] = "\"" . $k2 . "\":" . ((strpos ($v2, "\"") !== 0) ? "\"" . $v2 . "\"" : $v2);
+			}
+			$films_array[] = "{" . implode (",", $film_array) . "}";
+		}
+		return implode (",\n", $films_array);
+	}
 
 	function authorized () {
 		return ($_SERVER['REMOTE_ADDR'] === '184.152.37.149') ? TRUE : FALSE;
 	}
 
-	function set_email_data ($input) {
+	function add_film_note ($input) {
 		global $mysqli;
 		$stmt = $mysqli->prepare("INSERT INTO `film_email` (`submission_id`, `data`, `time`) VALUES (?, ?, ?)");
 		return $stmt->execute([$input['submission_id'], $input['email_data'], time()]);
@@ -169,7 +196,7 @@
 		return $stmt->fetchColumn();
 	}
 
-	function get_email_data ($submission_id) {
+	function get_note ($submission_id) {
 		global $mysqli;
 		$stmt = $mysqli->prepare("SELECT `time`, `data` FROM `film_email` WHERE `submission_id`=? ORDER BY `id` DESC");
 		$stmt->execute([$submission_id]);
@@ -216,18 +243,19 @@
 		return $output;
 	}
 
-	function film_image_in_folder ($filename_to_be_found) {
-		return glob (ROOT_DIRECTORY . "img/" . $filename_to_be_found);
-	}
+	function add_films_to_database_from_FF ($input) {
 
-	function add_films_to_database ($input) {
 		/*
-			3. extract submission_id;
-			4. extract name.
-			5. make image_import_name from film name - remove non-ascii chars, lowercase, replace spaces with underscores, making "Film *** Name" into "film_name", for the image naming convention "film_name-1.jpg".
-			3. make data into json.
-			4. foreach through list and add to db.
-		*/
+
+			1. foreach through $input
+			2. extract submission_id;
+			3. extract name.
+			4. create image_import_name from film name - remove non-ascii chars, lowercase, replace spaces with underscores, making "Film *** Name" into "film_name", for the image naming convention "film_name-1.jpg". This
+			5. make `data` into JSON.
+			4. add, repeat.
+
+			*/
+
 		global $mysqli;
 		$a = 0;
 		foreach ($input as $k1 => $v1) {

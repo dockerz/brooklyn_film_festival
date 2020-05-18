@@ -2,6 +2,8 @@
 
 	require "includes/app.php";
 
+	// edit form assembly begin
+
 	$message = $form_elements = '';
 	$show_edit_nav = TRUE;
 
@@ -9,10 +11,10 @@
 
 	if (isset ($_POST['update'])) {
 		$id = $_POST['submit_id'];
-		if (authorized ()) {
-			$message = (update_film_in_database ($_POST)) ? 'film updated' : 'film not updated';
+		if (authorized ()) { // DB updates are limited to authorized admins.
+			$message = (update_film_in_database ($_POST)) ? 'Film updated' : 'Film not updated';
 		} else {
-			$message = 'you do not have editing privileges';
+			$message = 'You do not have editing privileges.';
 		}
 		$message = '<p style="color: red;"><strong>' . $message . '</strong></p>';
 	}
@@ -22,18 +24,13 @@
 	$film = get_film_from_database($id);
 	$film_data = json_decode($film['data'], true, 512, JSON_UNESCAPED_UNICODE);
 
-	$checked = $film_data['ready'] ? 'checked ' : ''; // has film been marked "ready"?
+	$checked = $film_data['ready'] ? 'checked ' : ''; // Has film been marked "ready for export"?
 
-	$keys = [];
-	foreach ($film_data_map as $k1 => $v1) {
-		if ($v1[0]) {
-			$keys[] = $k1;
-			$form_elements .= '<p><a name="' . $k1 . '"></a><label for="' . $k1 . '">' . $k1 . '</label><textarea name="' . $k1 . '" ' . $disabled . '>' . str_replace ("_NL_", "\n", $film_data[$k1]) . '</textarea></p>';
-		}
-	}
+	// edit form assembly end
 
-	// associated email data
-	$notes_array = get_email_data ($film_data['submit_id']);
+	// notes begin
+
+	$notes_array = get_note ($film_data['submit_id']);
 	$notes = '';
 	if ($notes_array) {
 		foreach ($notes_array as $k1 => $v1) {
@@ -41,6 +38,18 @@
 		}
 	} else {
 		$notes = '<li><strong>there are no notes for this film.</strong></li>';
+	}
+
+	// notes end
+
+	// these keys are assembled to display as the navigation between form elements. this hacky solution needs to be refactored, big time.
+
+	$keys = [];
+	foreach ($film_data_map as $k1 => $v1) {
+		if ($v1[0]) {
+			$keys[] = $k1;
+			$form_elements .= '<p><a name="' . $k1 . '"></a><label for="' . $k1 . '">' . $k1 . '</label><textarea name="' . $k1 . '" ' . $disabled . '>' . str_replace ("_NL_", "\n", $film_data[$k1]) . '</textarea></p>';
+		}
 	}
 
 	$title = "bff : editing " . $film['submission_id'];
@@ -63,6 +72,7 @@
 					<p><label for="ready">text_updated?</label><span class="form_element_padding"><input type="checkbox" name="ready" value="true" <?=$checked?>/></span></p>
 					<p><a name="film_name"></a><label for="film_name">image_root_name</label><input type="text" name="film_name" value="<?=$film['name']?>" /></p>
 					<?=$form_elements?>
+					<input type="hidden" name="id" value="<?=$id?>">
 					<input type="hidden" name="update" value="<?=$film['id']?>">
 				</form>
 			</div>

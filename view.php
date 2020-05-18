@@ -6,7 +6,7 @@
 
 	if (isset ($_POST['submission_id'])) {
 		$message = '<p style="color: red;"><strong>';
-		$message .= (set_email_data ($_POST)) ? 'note added to this film.' : 'note not added.';
+		$message .= (add_film_note ($_POST)) ? 'note added to this film.' : 'note not added.';
 		$message .= '</strong></p>';
 		$film_id = $_POST['film_id'];
 	} else {
@@ -17,15 +17,15 @@
 	$film = get_film_from_database($film_id);
 	$film_data = json_decode($film['data'], true, 512, JSON_UNESCAPED_UNICODE);
 
-	// associated email data
-	$email_array = get_email_data ($film['submission_id']);
-	$emails = '';
-	if ($email_array) {
-		foreach ($email_array as $k1 => $v1) {
-			$emails .= '<li class="email"><p><strong>' . date ('Y-m-d', $v1['time']) . '</strong></p><p>' . nl2br($v1['data']). '</p></li>';
+	// note data
+	$note_array = get_note ($film['submission_id']);
+	$notes = '';
+	if ($note_array) {
+		foreach ($note_array as $k1 => $v1) {
+			$notes .= '<li class="email"><p><strong>' . date ('Y-m-d', $v1['time']) . '</strong></p><p>' . nl2br($v1['data']). '</p></li>';
 		}
 	} else {
-		$emails = '<li><strong>there are no notes for this film.</strong></li>';
+		$notes = '<li><strong>there are no notes for this film.</strong></li>';
 	}
 
 	$title = "bff : viewing " . $film['submission_id'];
@@ -62,7 +62,7 @@
 			<div class="cell">
 				<h2>notes</h2>
 				<ul class="vertical">
-					<?=$emails?>
+					<?=$notes?>
 				</ul>
 				<?php if ($_SERVER['REMOTE_ADDR'] === '184.152.37.149') { ?>
 				<form name="add_email" action="view.php" method="post" accept-charset"UTF-8">
