@@ -131,10 +131,10 @@
    <div class="container">
 	   <div class="row">
 		   <div class="cell">
-			   <h1>custom add to db</h1>
+			   <h1>Custom(Manual) add to DB</h1>
 			   <?=$message?>
 			   <form action="custom.php" method="post" accept-charset"UTF-8">
-				   <p>use this tool to import non-filmfreeway, .tsv formatted titles from the 2020 lineup G Doc.</p>
+				   <p>Use this tool to import .tsv formatted titles from the 2020 lineup G Doc.</p>
 				   <p><textarea name="tsv"></textarea></p>
 				   <input type="hidden" name="submit" value="1" />
 				   <p><button type="submit">import</button></p>
