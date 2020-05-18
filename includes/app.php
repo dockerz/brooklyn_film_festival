@@ -12,15 +12,17 @@
 	define ('ROOT_DIRECTORY', $_SERVER['DOCUMENT_ROOT'] . CLIENT_PATH);
 	define ('EXPORT_DIRECTORY_FROM_WEB', $_SERVER['PATH_INFO'] . 'export/');
 
-	header ('Access-Control-Allow-Origin: *');
+	header ('Access-Control-Allow-Origin: *'); // This is to allow cross-origin access for React and Babel.
 
 	ini_set('display_errors', 1);
 	require 'secrets.php';
 
 	/*
 
+		Since the data imported from Film Freeway and the required data structure for the export are different, the import data needs to be mapped to the output structure.
+
 		$film_freeway_index_map is how the data coming from the Film Freeway .xls file is mapped.
-		When used, this is exploded with a `
+		When used, this is exploded with `
 
 		*/
 

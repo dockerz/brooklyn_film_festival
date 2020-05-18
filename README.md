@@ -14,10 +14,12 @@ This id was to be unique and all edits and whatnot where supposed to add a new r
 
 As it turns out this was wrong. There were films, not in Film Freeway, that only existed in the lineup G Doc and had to be imported manually. Many of these had almost no data, at all.
 
-The system must be refactored to for unique identifiers be based upon the original title(including definite article - "The Greatest Film") and year, as 2 films could have the same name, from different years.
+1. The system must be refactored to for unique identifiers be based upon the original title(including definite article - "The Greatest Film") and year, as 2 films could have the same name, from different years.
 
-Also, years must be implemented, starting with 2020. Assign all 2020 films this.
+2. For next year's festival, years must be implemented, starting with 2020. Start by assigning all existing films to 2020.
 
-Next, a login for admins and guest access must be allowed for folks viewing portfolio.
+3. Next, a login for admins and guest access must be allowed for folks viewing portfolio.
+
+4. Using PHP's GD library, add the ability to drop a folder of images onto a page, which will format, name and upload them. Each subsequent dropping of a folder, initializes the images, for that film.
 
 ```
