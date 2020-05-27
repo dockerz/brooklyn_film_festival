@@ -1,38 +1,68 @@
-# Brooklyn Film Festival
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## About
-```
-This tool is being built to reduce a significant amount of work in the production of the yearly Brooklyn Film Festival. Before this tool, the production process consisted of gathering data from about 5 different platforms and having to sift through hundreds of emails. The process took over 2 weeks. This tool has cut that down to about 3 days and further changes will probably make it a 1 day job.
+## Available Scripts
 
-The goal is to eventually link this to the bff.org's Wordpress DB, via Rest API.
+In the project directory, you can run:
 
-LAMP Stack, with the UI being refactored in React. Initially considered Vue as the UI, but have since switched to React, as I am able to incrementally apply it, instead of having to rebuild the entire application, from the ground up.
+### `npm start`
 
-The UI was originally built in JS, HTML, CSS & jQuery.
+Runs the app in the development mode.<br />
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The MySQL DB takes advantage of the newish JSON data type, storing the exportable data in a JSON formatted cell, again, as the intent of this CMS is to eventually link directly to the Wordpress import. This is the groundwork for the Rest API to do that.
-```
+The page will reload if you make edits.<br />
+You will also see any lint errors in the console.
 
-## Todo
-```
-This system was setup under the assumption that all films were being imported from an .xls Film Freeway dump. This assumption led to the singular importance of the SUBMIT_ID(BKLN1234) assigned to each film, via Film Freeway.
+### `npm test`
 
-This id was to be unique and all edits and whatnot where supposed to add a new record to the DB, that referenced this ID. But the entire Short Doc category was not on Film Freeway, so a workaround(hack) had to be implemented, assigning an arbitrary ID(CSTM1234) to these special films.
+Launches the test runner in the interactive watch mode.<br />
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-As it turns out this was wrong. There were films, not in Film Freeway, that only existed in the lineup G Doc and had to be imported manually. Many of these had almost no data, at all.
+### `npm run build`
 
-1. The system must be refactored to for unique identifiers be based upon the original title(including definite article - "The Greatest Film") and year, as 2 films could have the same name, from different years.
+Builds the app for production to the `build` folder.<br />
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-2. For next year's festival, years must be implemented, starting with 2020. Start by assigning all existing films to 2020.
+The build is minified and the filenames include the hashes.<br />
+Your app is ready to be deployed!
 
-3. A login for admins and guest access must be allowed for folks viewing portfolio.
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-4. Using PHP's GD library, add the ability to drop a folder of images onto a page, which will format, name and upload them. Each subsequent dropping of a folder, initializes the images, for that film.
+### `npm run eject`
 
-5. Change all references of submission_id to submit_id, including in the DB.
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-6. Add ability to add a note from edit.php
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-7. Update the import script to do everything on the list of import.php
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-```
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+
+### Analyzing the Bundle Size
+
+This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+
+### Making a Progressive Web App
+
+This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+
+### Advanced Configuration
+
+This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+
+### Deployment
+
+This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+
+### `npm run build` fails to minify
+
+This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
