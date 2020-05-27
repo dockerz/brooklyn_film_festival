@@ -10,7 +10,7 @@
 	$id = $_GET['id'];
 
 	if (isset ($_POST['update'])) {
-		$id = $_POST['submit_id'];
+		$id = $_POST['id'];
 		if (authorized ()) { // DB updates are limited to authorized admins.
 			$message = (update_film_in_database ($_POST)) ? 'Film updated' : 'Film not updated';
 		} else {
@@ -24,7 +24,12 @@
 	$film = get_film_from_database($id);
 	$film_data = json_decode($film['data'], true, 512, JSON_UNESCAPED_UNICODE);
 
-	$checked = $film_data['ready'] ? 'checked ' : ''; // Has film been marked "ready for export"?
+	$category_id = get_category_id_by_name ($film_data['category']);
+	echo $film_data['category'];
+	$toggle_show_block = (($category_id !== 1)&&($category_id !== 2)) ? "hide" : "show";
+
+	$ready_checked = $film['ready'] ? 'checked ' : ''; // Has film been marked "ready for export"?
+	$in_festival_checked = $film['in_festival'] ? 'checked ' : ''; // Should film be removed from exports?
 
 	// edit form assembly end
 
@@ -52,9 +57,19 @@
 		}
 	}
 
+	$block_display = '<select name="block_id"><option value="0">choose</option>';
+	foreach (blocks() as $k1 => $v1) {
+		$block_display .= '<option value="' . $k1 . '" ' . (($film['block_id'] == $k1) ? "selected": "") . '>' . $v1 . '</option>';
+	}
+	$block_display .= '</select>';
+
 	$title = "bff : editing " . $film['submission_id'];
 
 	require "includes/head.php";
+
+	/*
+	<p><label for="ready">text_updated?</label><span class="form_element_padding"><input type="checkbox" name="ready" value="true" <?=$ready_checked?>/></span></p>
+	*/
 
 	?>
 
@@ -62,15 +77,20 @@
 		<div class="row">
 			<div class="cell">
 				<h1><strong><?=$film_data['title']?></strong></h1>
-				<p><span id="film_image"><?=$film['name']?></span> <strong><?=$film['submission_id']?></strong></p>
 				<?=$message?>
 			</div>
 		</div>
 		<div class="row">
 			<div class="cell">
 				<form name="film" action="edit.php" method="post" accept-charset"UTF-8">
-					<p><label for="ready">text_updated?</label><span class="form_element_padding"><input type="checkbox" name="ready" value="true" <?=$checked?>/></span></p>
-					<p><a name="film_name"></a><label for="film_name">image_root_name</label><input type="text" name="film_name" value="<?=$film['name']?>" /></p>
+					<p><label for="ready">in_festival?</label><span class="form_element_padding"><input type="checkbox" name="in_festival" value="true" <?=$in_festival_checked?>/></span></p>
+					<p><a name="category"></a><label for="category">category</label><?=$block_display?></p>
+					<p class="block <?=$toggle_show_block?>"><a name="block_number"></a><label for="block_number">block_number</label><input type="number" name="block_number" value="<?=$film['block_number']?>" /></p>
+					<p class="block <?=$toggle_show_block?>"><a name="block_order"></a><label for="block_order">block_order</label><input type="number" name="block_order" value="<?=$film['block_order']?>" /></p>
+					<p><a name="vimeo_program"></a><label for="vimeo_program">vimeo_program</label><input type="text" name="vimeo_program" value="<?=$film['vimeo_program']?>" /></p>
+					<p><a name="website_film_id"></a><label for="website_film_id">website_film_id</label><input type="number" name="website_film_id" value="<?=$film['website_film_id']?>" /></p>
+					<p><a name="name_original"></a><label for="name_original">name_original</label><input type="text" name="name_original" value="<?=$film['name_original']?>" /></p>
+					<p><a name="name_normalized"></a><label for="name_normalized">name_normalized</label><input type="text" name="name_normalized" value="<?=$film['name_normalized']?>" /></p>
 					<?=$form_elements?>
 					<input type="hidden" name="id" value="<?=$id?>">
 					<input type="hidden" name="update" value="<?=$film['id']?>">

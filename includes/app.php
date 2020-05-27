@@ -84,7 +84,7 @@
 		"year" => [[29], FALSE, "make_date", "inp", FALSE],
 		"length" => [[18], FALSE, "make_duration", "inp", 8],
 		"format" => [[31], TRUE, FALSE, "inp", FALSE],
-		"premiere" => [FALSE],
+		"premiere" => ["manual", FALSE, FALSE, "inp", FALSE],
 		"email" => [[4], FALSE, FALSE, "inp", 12],
 		"web" => [[23], TRUE, FALSE, "inp", FALSE],
 		"cast" => [[44], FALSE, FALSE, "inp", FALSE],
@@ -164,57 +164,192 @@
 		return ($_SERVER['REMOTE_ADDR'] === '184.152.37.149') ? TRUE : FALSE;
 	}
 
+	function blocks () {
+		global $mysqli;
+		$stmt = $mysqli->query("SELECT * FROM `category` ORDER BY `id` ASC");
+		return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+	}
+
+	function add_festival_year () {
+		global $mysqli;
+		$stmt = $mysqli->query("SELECT `data` FROM `festival_year` ORDER BY `id` DESC LIMIT 1");
+		$festival_year = $stmt->fetchColumn();
+		$stmt = $mysqli->prepare("INSERT INTO `festival_year` (`data`) VALUES (?)");
+		return $stmt->execute([++$festival_year]);
+	}
+
 	function add_film_note ($input) {
 		global $mysqli;
-		$stmt = $mysqli->prepare("INSERT INTO `film_email` (`submission_id`, `data`, `time`) VALUES (?, ?, ?)");
+		$stmt = $mysqli->prepare("INSERT INTO `film_note` (`submission_id`, `data`, `time`) VALUES (?, ?, ?)");
 		return $stmt->execute([$input['submission_id'], $input['email_data'], time()]);
 	}
 
-	function get_latest_film_id_from_submission_id ($submission_id) {
+	function add_festival_vimeo_link ($link, $id) {
 		global $mysqli;
-		$stmt = $mysqli->prepare("SELECT `id` FROM `film` WHERE `submission_id`=? ORDER BY `id` DESC LIMIT 1");
-		$stmt->execute([$submission_id]);
+		$stmt = $mysqli->prepare("UPDATE `film` SET `vimeo_program` = ? WHERE `id`=?");
+		return $stmt->execute([$link, $id]);
+	}
+
+	function add_data_to_data_row_by_key ($name_original, $website_film_id, $premiere, $id) {
+		// adds original film name, premiere status & vimeo website id
+		global $mysqli;
+		$stmt = $mysqli->prepare("UPDATE `film` SET `name_original` = ?, `website_film_id` = ?, data = JSON_SET(data, '$.premiere', ?) WHERE `id`=?");
+		return $stmt->execute([$name_original, $website_film_id, $premiere, $id]);
+	}
+
+	function is_film_in_db_by_title ($title) {
+		global $mysqli;
+		$stmt = $mysqli->prepare("SELECT `id` FROM `film` WHERE `name_normalized`=? LIMIT 1");
+		$stmt->execute([$title]);
 		return $stmt->fetchColumn();
 	}
 
 	function get_note ($submission_id) {
 		global $mysqli;
-		$stmt = $mysqli->prepare("SELECT `time`, `data` FROM `film_email` WHERE `submission_id`=? ORDER BY `id` DESC");
+		$stmt = $mysqli->prepare("SELECT `time`, `data` FROM `film_note` WHERE `submission_id`=? ORDER BY `id` DESC");
 		$stmt->execute([$submission_id]);
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
+	function get_category_id_by_name ($category) {
+		global $mysqli;
+		$stmt = $mysqli->prepare("SELECT `id` FROM `category` WHERE `data`=? LIMIT 1");
+		$stmt->execute([$category]);
+		return $stmt->fetchColumn();
+	}
+
+	function get_festival_year ($festival_year_id) {
+		global $mysqli;
+		$stmt = $mysqli->prepare("SELECT `data` FROM `festival_year` WHERE `id`=? LIMIT 1");
+		$stmt->execute([$festival_year_id]);
+		return $stmt->fetchColumn();
+	}
+
+	function get_festival_years () {
+		global $mysqli;
+		$stmt = $mysqli->query("SELECT * FROM `festival_year` ORDER BY `id` DESC");
+		return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+	}
+
+	function get_block_data ($block_id, $block_number) {
+		global $mysqli;
+		$stmt = $mysqli->prepare("SELECT `trt`, `vimeo`, `title` FROM `block` WHERE `category_id`=? AND `block_number`=? LIMIT 1");
+		$stmt->execute([$block_id, $block_number]);
+		$output = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $output;
+	}
+
 	function get_film_from_database ($submission_id) {
 		global $mysqli;
-		$stmt = $mysqli->prepare("SELECT * FROM `film` WHERE `submission_id`=? ORDER BY `id` DESC LIMIT 1");
+		$stmt = $mysqli->prepare("SELECT * FROM `film` WHERE `id`=? LIMIT 1");
 		$stmt->execute([$submission_id]);
 		return $stmt->fetch(PDO::FETCH_ASSOC);
 	}
 
-	function get_custom_submit_id () {
+	function get_films_for_vimeo_pages () {
 		global $mysqli;
-		$stmt = $mysqli->query("SELECT `data` FROM `custom_submission_id` LIMIT 1");
-		return $stmt->fetchColumn();
+		$stmt = $mysqli->query("SELECT `film`.`id`,
+			`film`.`ready`,
+			`film`.`website_film_id`,
+			`film_note`.`id` AS `note`,
+			film.data->'$.premiere' AS `premiere`,
+			film.data->'$.image_1' AS `img`,
+			film.data->'$.category' AS `category`,
+			film.data->'$.title' AS `name`,
+			`film`.`submission_id`
+			FROM `film`
+			LEFT JOIN `film_note`
+			ON `film_note`.`submission_id` = `film`.`submission_id`
+			WHERE in_festival = true
+			GROUP BY `film`.`submission_id`
+			ORDER BY film.data->'$.category',
+			film.data->'$.title' ASC");
+		$output = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $output;
 	}
 
-	function set_custom_submit_id ($input) {
+	function get_films_with_blocks ($festival_year_id, $data) {
 		global $mysqli;
-		$stmt = $mysqli->prepare("UPDATE `custom_submission_id` SET data=? WHERE `id`=1");
-		return $stmt->execute([$input]);
+		$stmt = $mysqli->prepare("SELECT `id`,
+			`website_film_id`
+			`vimeo_program`,
+			`block_number`,
+			`block_order`,
+			`vimeo_program`,
+			`name_original`,
+			`website_film_id`,
+			film.data->'$.director_1_first_name' AS `dir_1_fn`,
+			film.data->'$.director_1_last_name' AS `dir_1_ln`,
+			film.data->'$.director_2_first_name' AS `dir_2_fn`,
+			film.data->'$.director_2_last_name' AS `dir_2_ln`,
+			film.data->'$.director_3_first_name' AS `dir_3_fn`,
+			film.data->'$.director_3_last_name' AS `dir_3_ln`,
+			film.data->'$.premiere' AS `premiere`,
+			film.data->'$.year' AS `year`,
+			film.data->'$.country_1' AS `country`,
+			film.data->'$.length' AS `length`,
+			film.data->'$.title' AS `name`
+			FROM `film`
+			WHERE `festival_year_id` = ?
+			AND `block_id` = ?
+			AND `in_festival` = true
+			ORDER BY `block_number` ASC,
+			`block_order` ASC");
+		$stmt->execute([$festival_year_id, $data]);
+		$output = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $output;
 	}
 
-	function get_films_from_database () {
+	function get_films ($festival_year_id) {
 		global $mysqli;
-		$stmt = $mysqli->query("SELECT `film`.`id`, `film`.`ready`, `film_email`.`id` AS `note`, film.data->'$.email' AS `email`, film.data->'$.image_1' AS `img`, film.data->'$.category' AS `category`, film.data->'$.title' AS `name`, `film`.`submission_id` FROM `film` LEFT JOIN `film_email` ON `film_email`.`submission_id` = `film`.`submission_id` GROUP BY `film`.`submission_id` ORDER BY film.data->'$.category', film.data->'$.title' ASC");
+		$stmt = $mysqli->prepare("SELECT `film`.`id`,
+			`film`.`in_festival`,
+			`film`.`ready`,
+			`film`.`website_film_id`,
+			`film`.`vimeo_program`,
+			`film`.`block_id`,
+			`film`.`block_number`,
+			`film`.`block_order`,
+			film.data->'$.premiere' AS `premiere`,
+			film.data->'$.image_1' AS `img`,
+			film.data->'$.category' AS `category`,
+			film.data->'$.title' AS `name`,
+			`film`.`submission_id`
+			FROM `film`
+			LEFT JOIN `film_note`
+			ON `film_note`.`submission_id` = `film`.`submission_id`
+			WHERE `film`.`festival_year_id` = ?
+			AND `film`.`in_festival` = true
+			GROUP BY `film`.`submission_id`
+			ORDER BY `film`.`block_id` DESC,
+			`film`.`block_number` ASC,
+			`film`.`block_order` ASC,
+			`film`.`name_normalized` ASC");
+		$stmt->execute([$festival_year_id]);
 		$output = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $output;
 	}
 
 	function get_films_data_for_export () {
 		global $mysqli;
-		$stmt = $mysqli->query("SELECT * FROM `film` ORDER BY `name` ASC");
+		$stmt = $mysqli->query("SELECT * FROM `film` ORDER BY `name_normalized` ASC");
 		$output = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $output;
+	}
+
+	function normalize_film_name ($input) {
+		return strtolower(str_replace(" ", "_", preg_replace("/[^A-Za-z0-9 ]/", '', $input[1])));
+	}
+
+	function add_film_to_festival ($input) {
+
+		global $mysqli;
+		$stmt = $mysqli->prepare("INSERT INTO `film` (`submission_id`, `block_id`, `block_number`, `block_order`, `vimeo_program`, `website_film_id`, `name_original`, `name_normalized`, `data`, `time`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		if ($stmt->execute([$input['submit_id'], $input['block_id'], $input['block_number'], $input['block_order'], $input['vimeo_program'], $input['website_film_id'], $input['title'], normalize_film_name ($input['title']), json_encode ($input), time()])) {
+			set_custom_submit_id ($id);
+			return "added to database";
+		}
+
 	}
 
 	function add_films_to_database_from_FF ($input) {
@@ -233,12 +368,8 @@
 		global $mysqli;
 		$a = 0;
 		foreach ($input as $k1 => $v1) {
-			$db_input['film_id'] = $v1['submit_id'];
-			$db_input['film_name'] = preg_replace("/[^A-Za-z0-9 ]/", '', $v1['title']);
-			$db_input['film_name'] = strtolower(str_replace(" ", "_", $db_input['film_name']));
-			$db_input['json'] = json_encode($v1);
-			$stmt = $mysqli->prepare("INSERT INTO `film` (`submission_id`, `name`, `data`, `time`) VALUES (?, ?, ?, ?)");
-			if ($stmt->execute([$db_input['film_id'], $db_input['film_name'], $db_input['json'], time()])) {
+			$stmt = $mysqli->prepare("INSERT INTO `film` (`name_normalized`, `name_original`, `data`, `time`) VALUES (?, ?, ?, ?)");
+			if ($stmt->execute([normalize_film_name ($v1['title']), $v1['title'], json_encode ($v1), time()])) {
 				$a++;
 			}
 		}
@@ -315,9 +446,9 @@
 	function update_film_in_database ($input) {
 		global $mysqli;
 		$id_to_update = get_latest_film_id_from_submission_id ($input['submit_id']);
-		$ready = (isset ($input['ready'])) ? TRUE : FALSE;
-		$stmt = $mysqli->prepare("UPDATE `film` SET `name`=?, `data`=?, `time`=?, `edited`=true, `ready`=? WHERE id=?");
-		return $stmt->execute([$input['film_name'], json_encode($input), time(), $ready, $id_to_update]);
+		$in_festival = (isset ($input['in_festival'])) ? TRUE : FALSE;
+		$stmt = $mysqli->prepare("UPDATE `film` SET `name_normalized`=?, `data`=?, `time`=?, `edited`=true, `in_festival`=?, `name_original`=?, `block_id`=?, `block_number`=?, `block_order`=?, `vimeo_program`=?, `website_film_id`=? WHERE id=?");
+		return $stmt->execute([$input['film_name'], json_encode($input), time(), $in_festival, $input['name_original'], $input['block_id'], $input['block_number'], $input['block_order'], $input['vimeo_program'], $input['website_film_id'], $id_to_update]);
 	}
 
 	function assemble_film_data ($input, $map) {

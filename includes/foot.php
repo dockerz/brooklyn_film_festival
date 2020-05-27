@@ -14,8 +14,10 @@
 		$('textarea')
 			.on('focus', function () {
 				if ($(this).attr('name').search('image_') > -1) { // element clicked is associated with the images.
-					let img_name = $('#film_image').text();
-					$(this).text(img_name + '-' + el_name.replace('image_', '') + '.jpg');
+					let img_name = $('input[name="name_normalized').val(),
+							el_name = $(this).attr('name').replace('image_', '');
+							console.log(img_name);
+					$(this).text(img_name + '-' + el_name + '.jpg');
 				}
 			});
 		</script>
