@@ -1,14 +1,11 @@
 import React from 'react';
-import logo from '../assets/logo.svg';
- import './App.css';
 
-function App() {
+function Output() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
-          edit <code>src/App.js</code> and save to reload.
+          output
         </p>
         <a
           className="App-link"
@@ -23,4 +20,4 @@ function App() {
   );
 }
 
-export default App;
+export default Output;

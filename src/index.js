@@ -1,7 +1,7 @@
+import { BrowserRouter as Router } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
-import { BrowserRouter } from 'react-router-dom';
 
 // assets
 import './index.css';
@@ -12,9 +12,9 @@ import App from './components/App';
 // import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <Router>
     <App />
-  </React.StrictMode>,
+  </Router>,
   document.getElementById('root')
 );
 
