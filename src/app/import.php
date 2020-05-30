@@ -1,7 +1,42 @@
-import React from 'react';
+<?php
 
-function Import() {
-  return (
+	$title = "bff : import";
+	require "includes/app.php";
+	require "includes/head.php";
+
+	if (isset ($_POST['submit'])) {
+
+		if (authorized ()) {
+
+			$message = "";
+			$films_for_output = [];
+			$file = file_get_contents ($_FILES['script']['tmp_name']);
+			$films = explode ("\n", $file);
+
+			foreach ($films as $k1 => $film) {
+				$film_data_to_be_assembled = explode ("`", $film);
+				if ($film) {
+					$films_for_output[$k1] = assemble_film_data ($film_data_to_be_assembled, $film_data_map);
+				}
+			}
+
+			$message = add_films_to_database_from_FF ($films_for_output);
+
+			echo $message;
+
+		} else {
+			echo "you are not authorized to import files to the db.";
+		}
+
+	} else {
+
+		$festival_year = '<select name="festival_year">';
+		foreach (get_festival_years () as $k1 => $v1) {
+			$festival_year .= '<option value="' . $k1 . '">' . $v1 . '</option>';
+		}
+		$festival_year .= '</select>';
+
+		?>
 		<div class="container">
 			<div class="row">
 				<h1>file upload</h1>
@@ -9,7 +44,7 @@ function Import() {
 			</div>
 			<div class="row">
 				<h2>step 1</h2>
-				<ol>
+				<ol class="vertical">
 					<li>in the g doc list with all the "selected" films in it, select the entire vertical column of film ids(BKLYN2337, BKLYN2338, etc.).</li>
 					<li>copy the contents of all the cells.</li>
 					<li>open a page in a text editor and paste in. delete blank lines. convert all \n to commas, making the list look like: BKLYN2337,BKLYN2338,BKLYN2339,BKLYN2340,BKLYN2341,BKLYN2342, etc.</li>
@@ -22,7 +57,7 @@ function Import() {
 			</div>
 			<div class="row">
 				<h2>step 2</h2>
-				<ol>
+				<ol class="vertical">
 					<li>open the excel file in an editor. you will be using regex search and replace.</li>
 					<li>delete all carriage returns(\r, &lt;CR&gt;).</li>
 					<li>search and replace all new lines(\n) with _NL_.</li>
@@ -37,14 +72,13 @@ function Import() {
 				</ol>
 			</div>
 			<div class="row">
-				<form action="/import" method="post" enctype="multipart/form-data">
-					<p><label for="festival_year">festival year: </label></p>
+				<form action="import.php" method="post" enctype="multipart/form-data">
+					<p><label for="festival_year">festival year: </label> <?=$festival_year?></p>
 					<p><label for="script">file: </label><input type="file" name="script" /><input type="hidden" name="submit" value="1" /></p>
 					<p><button type="submit">upload</button></p>
 				</form>
 			</div>
 		</div>
-  );
-}
-
-export default Import;
+		<?php
+	}
+	require "includes/foot.php";
