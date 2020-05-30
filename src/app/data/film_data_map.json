@@ -1,4 +1,4 @@
-const film_data_map = {
+{
 	"submit_id":[[12],false,false,"inp",false],
 	"title_article":[[13],false,"title","inp",false],
 	"title":[[13],false,false,"inp",false],
@@ -86,4 +86,4 @@ const film_data_map = {
 	"who_will_attend":[false],
 	"display_order":[false],
 	"language":[[20],false,false,"inp",false]
-};
+}
