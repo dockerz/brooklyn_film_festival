@@ -1,4 +1,4 @@
-{
+[{
 	"Narrative Feature":[
 		{"id":"1548","vimeo_program":"420659672\/ca8362744c","block_number":"0","block_order":"0","name_original":"THE JOURNEY OF MURDER","website_film_id":"2205","dir_1_fn":"Jun","dir_1_ln":"WANG","dir_2_fn":"","dir_2_ln":"","dir_3_fn":null,"dir_3_ln":null,"premiere":"US","year":"2019","country":"China","length":"105","name":"JOURNEY OF MURDER"},
 		{"id":"1550","vimeo_program":"420419456\/b9cf67e25b","block_number":"0","block_order":"0","name_original":"Snaeland","website_film_id":"2207","dir_1_fn":"Lise","dir_1_ln":"Raven","dir_2_fn":"","dir_2_ln":"","dir_3_fn":null,"dir_3_ln":null,"premiere":"NY","year":"2019","country":"United States, Germany, Iceland","length":"75","name":"Snaeland"},
@@ -142,4 +142,4 @@
 		{"id":"1523","vimeo_program":"413234759\/54a5ccb55c","block_number":"6","block_order":"4","name_original":"They salivate","website_film_id":"2179","dir_1_fn":"Ariane","dir_1_ln":"Boukerche","dir_2_fn":"","dir_2_ln":"","dir_3_fn":null,"dir_3_ln":null,"premiere":"NY","year":"2019","country":"France","length":"20","name":"They salivate"},
 		{"id":"1559","vimeo_program":"412563858\/8136288e3b","block_number":"6","block_order":"5","name_original":"Hammurabi","website_film_id":"2216","dir_1_fn":"Patrick","dir_1_ln":"Kennelly","dir_2_fn":"","dir_2_ln":"","dir_3_fn":null,"dir_3_ln":null,"premiere":"WORLD","year":"2019","country":"United States","length":"11","name":"Hammurabi"}
 	]
-}
+}]

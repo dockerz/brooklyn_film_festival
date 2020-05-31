@@ -2,9 +2,9 @@ import React from 'react';
 
 function App() {
   return (
-		<div class="container fixed">
-			<div class="row">
-				<ul class="nav">
+		<div className="container fixed">
+			<div className="row">
+				<ul className="nav">
 					<li><a href="/">home</a></li>
 					<li><a href="/import">import: file</a></li>
 					<li><a href="/custom">import: custom</a></li>

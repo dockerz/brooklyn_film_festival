@@ -12,17 +12,17 @@ import Output from '../views/Output';
 
 function App() {
   return (
-			<Router>
-				<div class="wrapper">
-					<Nav />
-					<Route path="/" component={Index} exact />
-					<Route path="/import" component={Import} exact />
-					<Route path="/export" component={Export} exact />
-					<Route path="/output" component={Output} exact />
-					<Route path="/view" component={View} exact />
-					<Route path="/edit" component={Edit} exact />
-				</div>
-			</Router>
+		<Router>
+			<div className="wrapper">
+				<Nav />
+				<Route path="/" component={Index} exact />
+				<Route path="/import" component={Import} exact />
+				<Route path="/export" component={Export} exact />
+				<Route path="/output" component={Output} exact />
+				<Route path="/view" component={View} exact />
+				<Route path="/edit" component={Edit} exact />
+			</div>
+		</Router>
   );
 }
 
