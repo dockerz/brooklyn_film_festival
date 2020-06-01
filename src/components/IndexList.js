@@ -2,7 +2,7 @@
 import React from 'react';
 
 // data
-import filmData from '../app/data/films.json';
+import filmData from '../data/films.json';
 
 // components
 import IndexListItem from '../components/IndexListItem';

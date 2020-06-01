@@ -1,19 +1,14 @@
 import React from 'react';
 
-import OutputData from '../app/data/output.json';
-import FilmData from '../app/data/films.json';
+// components
+import OutputList from '../components/OutputList';
 
 function Output() {
   return (
-		<div className="App">
-		{
-			OutputData.map((section, i) => {
-			console.log(section[0]);
-//				section.map((film, i) => {
-	//				return (<p>{foo}</p>)
-		//		})
-			})
-		}
+		<div className="container">
+			<div class="row">
+				<OutputList />
+			</div>
 		</div>
   )
 }

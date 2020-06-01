@@ -1,8 +1,6 @@
 // react
 import React from 'react';
 
-// data
-
 // components
 import IndexList from '../components/IndexList';
 
