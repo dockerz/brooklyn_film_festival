@@ -9,6 +9,7 @@ import Export from '../views/Export';
 import Edit from '../views/Edit';
 import View from '../views/View';
 import Output from '../views/Output';
+import Add from '../views/Add';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
 				<Route path="/export" component={Export} exact />
 				<Route path="/output" component={Output} exact />
 				<Route path="/view" component={View} exact />
-				<Route path="/edit" component={Edit} exact />
+				<Route path="/add_to_festival" component={Add} exact />
 			</div>
 		</Router>
   );

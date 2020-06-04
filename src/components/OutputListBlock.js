@@ -5,21 +5,16 @@ import React from 'react';
 import OutputListItem from '../components/OutputListItem';
 
 function OutputBlock (props) {
-	console.log(props.block);
-	for (var i = 0; i < props.block.length; i++) {
-		console.log(props.block[i]);
-	}
-	return ('foo')
-	/*
-	return (
-		props..map((film) => {
-			console.log(film);
-			return (
-				<OutputListItem film={props.film} />
-			)
-		})
-	);
-*/
+  return (
+		<div className="filmOutputBlock">
+			<h2>{props.filmBlock.category}</h2>
+			{
+				props.filmBlock.films.map(block =>
+					<OutputListItem films={block} category={props.filmBlock.category}/>
+				)
+			}
+		</div>
+  );
 }
 
 export default OutputBlock;

@@ -1,18 +1,17 @@
 // react
 import React from 'react';
 
-// data
-import outputData from '../data/output.json';
-
 // components
 import OutputListBlock from '../components/OutputListBlock';
 
-function List(props) {
+// data
+import filmBlocks from "../data/output.json";
 
+function List(props) {
   return (
-		outputData.map((block) => {
+		filmBlocks.map((block) => {
 			return (
-				<OutputListBlock block={block} />
+				<OutputListBlock filmBlock={block} />
 			)
 		})
   );

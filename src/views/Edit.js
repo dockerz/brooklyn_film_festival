@@ -1,6 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 function App() {
+
+	  useEffect(() => {
+			// Update the document title using the browser API
+			document.title = `bff: editing STICKER`;
+		});
+
   return (
 		<div class="container">
 		<div class="row">

@@ -1,10 +1,16 @@
 // react
-import React from 'react';
+import React, {useEffect} from 'react';
 
 // components
 import IndexList from '../components/IndexList';
 
 function App() {
+
+	useEffect(() => {
+		// Update the document title using the browser API
+		document.title = `bff: index`;
+	});
+
   return (
 		<div className="App">
 			<div className="container">
