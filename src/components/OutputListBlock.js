@@ -9,8 +9,8 @@ function OutputBlock (props) {
 		<div className="filmOutputBlock">
 			<h2>{props.filmBlock.category}</h2>
 			{
-				props.filmBlock.films.map(block =>
-					<OutputListItem films={block} category={props.filmBlock.category}/>
+				props.filmBlock.films.map(
+					block => <OutputListItem films={block} category={props.filmBlock.category} key={block.id} />
 				)
 			}
 		</div>
